@@ -1,24 +1,23 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
+
+	_ "github.com/On-A-Rocket/Authorization-TA/docs"
+	"github.com/On-A-Rocket/Authorization-TA/model"
+	"gopkg.in/yaml.v3"
 
 	"github.com/go-playground/validator"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
-	middleware "github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	_ "github.com/wlsgh199/TimeAndAttendance/docs"
 )
 
 type (
-	User struct {
-		Name  string `json:"name" validate:"required"`
-		Email string `json:"email" validate:"required,email"`
-	}
-
 	CustomValidator struct {
 		validator *validator.Validate
 	}
@@ -26,15 +25,14 @@ type (
 
 func (cv *CustomValidator) Validate(i interface{}) error {
 	if err := cv.validator.Struct(i); err != nil {
-		// Optionally, you could return the error to give each route more control over the status code
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	return nil
 }
 
-// @title Swagger Example API
+// @title Authoriztion-TA Service API
 // @version 1.0
-// @description This is a sample server Petstore server.
+// @description This is Absenteeism and tardiness management Server.
 // @termsOfService http://swagger.io/terms/
 
 // @contact.name API Support
@@ -44,69 +42,47 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host petstore.swagger.io
-// @BasePath /v2
+// @host localhost:1323
+// @BasePath
 func main() {
 
-	conn, err := sql.Open("mysql", "root:dkssud123@tcp(127.0.0.1:3306)/test")
-	if err != nil {
-		fmt.Println(err)
-		//os.Exit(1)
-	}
-
-	// use your own select statement
-	// this is just an example statement
-	statement, err := conn.Prepare("select level from keyword")
-
-	if err != nil {
-		fmt.Println(err)
-		//os.Exit(1)
-	}
-
-	rows, err := statement.Query() // execute our select statement
-
-	if err != nil {
-		fmt.Println(err)
-		//os.Exit(1)
-	}
-
-	for rows.Next() {
-		var level string
-		rows.Scan(&level)
-		fmt.Println("level is :", level)
-	}
-
-	defer conn.Close()
-
-	return
+	var c ConnectionInfo
+	c.getConnectionInfo()
+	fmt.Println(c)
 
 	e := echo.New()
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	// // 첫 화면
-	// e.GET("/", func(c echo.Context) error {
-	// 	return c.String(http.StatusOK, "Hello World!")
-	// })
-
 	e.Validator = &CustomValidator{validator: validator.New()}
-	e.POST("/users", func(c echo.Context) (err error) {
-		u := new(User)
-		if err = c.Bind(u); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-		}
-		if err = c.Validate(u); err != nil {
-			return err
-		}
-		return c.JSON(http.StatusOK, u)
-	})
-
 	e.POST("/user", getUser)
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	e.Logger.Fatal(e.Start(":1323")) // localhost:1323
+}
+
+type ConnectionInfo struct {
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
+	Id       string `yaml:"id"`
+	Pass     string `yaml:"pass"`
+	Database string `yaml:"database"`
+}
+
+func (c *ConnectionInfo) getConnectionInfo() *ConnectionInfo {
+
+	yamlFile, err := ioutil.ReadFile("config.yaml")
+	if err != nil {
+		log.Printf("yamlFile.Get err   #%v ", err)
+	}
+	err = yaml.Unmarshal(yamlFile, c)
+	if err != nil {
+		log.Fatalf("Unmarshal: %v", err)
+	}
+
+	return c
 }
 
 // @Summary Create user
@@ -116,27 +92,29 @@ func main() {
 // @Param userBody body User true "User Info Body"
 // @Success 200 {object} User
 // @Router /user [post]
-func getUser(c echo.Context) error {
-	u := &User{
-		Name:  "Jon",
-		Email: "jon@labstack.com",
+func getUser(c echo.Context) (err error) {
+	u := new(model.User)
+	if err = c.Bind(u); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-
-	// db, err := sql.Open("mysql", "root:dkssud123@tcp(127.0.0.1:3306)/test")
-	// if err != nil {
-	// 			fmt.Println(err.Error())
-	// } else {
-	// 			fmt.Println("db is connected")
-	// }
-	// defer db.Close()
-	// // make sure connection is available
-	// err = db.Ping()
-	// if err != nil {
-	// 			fmt.Println(err.Error())
-	// }
-
+	if err = c.Validate(u); err != nil {
+		return err
+	}
 	return c.JSON(http.StatusOK, u)
 }
+
+// db, err := sql.Open("mysql", "root:dkssud123@tcp(127.0.0.1:3306)/test")
+// if err != nil {
+// 			fmt.Println(err.Error())
+// } else {
+// 			fmt.Println("db is connected")
+// }
+// defer db.Close()
+// // make sure connection is available
+// err = db.Ping()
+// if err != nil {
+// 			fmt.Println(err.Error())
+// }
 
 // func getUser(c echo.Context) error {
 
