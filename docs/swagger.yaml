@@ -1,5 +1,5 @@
 definitions:
-  main.User:
+  models.User:
     properties:
       email:
         type: string
@@ -9,7 +9,44 @@ definitions:
     - email
     - name
     type: object
-host: localhost:1323
+  models.WorkHistory:
+    properties:
+      deparment_code:
+        type: string
+      deparment_name:
+        type: string
+      end_time:
+        type: string
+      id:
+        type: string
+      message:
+        type: string
+      name:
+        type: string
+      start_time:
+        type: string
+      update_time:
+        type: string
+      work_time:
+        type: string
+      work_type_code:
+        type: string
+      work_type_name:
+        type: string
+    required:
+    - deparment_code
+    - deparment_name
+    - end_time
+    - id
+    - message
+    - name
+    - start_time
+    - update_time
+    - work_time
+    - work_type_code
+    - work_type_name
+    type: object
+host: localhost:7101
 info:
   contact:
     email: support@swagger.io
@@ -29,18 +66,38 @@ paths:
       - application/json
       description: Create new user
       parameters:
-      - description: User Info Body
+      - description: models.User Info Body
         in: body
         name: userBody
         required: true
         schema:
-          $ref: '#/definitions/main.User'
+          $ref: '#/definitions/models.User'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.User'
+            $ref: '#/definitions/models.User'
       summary: Create user
+  /wh:
+    post:
+      consumes:
+      - application/json
+      description: Insert workhistory
+      parameters:
+      - description: WorkHistory Info Body
+        in: body
+        name: WorkhistoryBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.WorkHistory'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.WorkHistory'
+      summary: Insert workhistory
 swagger: "2.0"

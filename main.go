@@ -7,11 +7,13 @@ import (
 	"net/http"
 
 	_ "github.com/On-A-Rocket/Authorization-TA/docs"
-	"github.com/On-A-Rocket/Authorization-TA/model"
+	"github.com/On-A-Rocket/Authorization-TA/models"
 	"gopkg.in/yaml.v3"
 
 	"github.com/go-playground/validator"
 	_ "github.com/go-sql-driver/mysql"
+
+	//middleware "github.com/labstack/echo/middleware"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
@@ -42,7 +44,7 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:1323
+// @host localhost:7101
 // @BasePath
 func main() {
 
@@ -56,11 +58,30 @@ func main() {
 	e.Use(middleware.Recover())
 
 	e.Validator = &CustomValidator{validator: validator.New()}
+
 	e.POST("/user", getUser)
+	e.POST("/wh", postWorkHistory)
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
-	e.Logger.Fatal(e.Start(":1323")) // localhost:1323
+	e.Logger.Fatal(e.Start(":7101")) // localhost:1323
+
+	// e := echo.New()
+	// e.GET("/request", func(c echo.Context) error {
+	// 	req := c.Request()
+	// 	format := `
+	// 		<code>
+	// 			Protocol: %s<br>
+	// 			Host: %s<br>
+	// 			Remote Address: %s<br>
+	// 			Method: %s<br>
+	// 			Path: %s<br>
+	// 		</code>
+	// 	`
+	// 	return c.HTML(http.StatusOK, fmt.Sprintf(format, req.Proto, req.Host, req.RemoteAddr, req.Method, req.URL.Path))
+	// })
+	// e.Logger.Fatal(e.StartTLS(":1323", "cert.pem", "key.pem"))
+
 }
 
 type ConnectionInfo struct {
@@ -89,11 +110,11 @@ func (c *ConnectionInfo) getConnectionInfo() *ConnectionInfo {
 // @Description Create new user
 // @Accept json
 // @Produce json
-// @Param userBody body User true "User Info Body"
-// @Success 200 {object} User
+// @Param userBody body models.User true "User Info Body"
+// @Success 200 {object} models.User
 // @Router /user [post]
 func getUser(c echo.Context) (err error) {
-	u := new(model.User)
+	u := new(models.User)
 	if err = c.Bind(u); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -103,22 +124,21 @@ func getUser(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, u)
 }
 
-// db, err := sql.Open("mysql", "root:dkssud123@tcp(127.0.0.1:3306)/test")
-// if err != nil {
-// 			fmt.Println(err.Error())
-// } else {
-// 			fmt.Println("db is connected")
-// }
-// defer db.Close()
-// // make sure connection is available
-// err = db.Ping()
-// if err != nil {
-// 			fmt.Println(err.Error())
-// }
+// @Summary Insert workhistory
+// @Description Insert workhistory
+// @Accept json
+// @Produce json
+// @Param WorkhistoryBody body models.WorkHistory true "WorkHistory Info Body"
+// @Success 200 {object} models.WorkHistory
+// @Router /wh [post]
+func postWorkHistory(c echo.Context) (err error) {
+	u := new(models.WorkHistory)
+	if err = c.Bind(u); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	if err = c.Validate(u); err != nil {
+		return err
+	}
 
-// func getUser(c echo.Context) error {
-
-// 	id := c.Param("id")
-// 	return c.String(http.StatusOK, id)
-
-// }
+	return c.JSON(http.StatusOK, u)
+}
