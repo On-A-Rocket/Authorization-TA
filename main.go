@@ -1,19 +1,14 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 
 	_ "github.com/On-A-Rocket/Authorization-TA/docs"
 	"github.com/On-A-Rocket/Authorization-TA/models"
-	"gopkg.in/yaml.v3"
 
 	"github.com/go-playground/validator"
 	_ "github.com/go-sql-driver/mysql"
 
-	//middleware "github.com/labstack/echo/middleware"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
@@ -48,9 +43,7 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 // @BasePath
 func main() {
 
-	var c ConnectionInfo
-	c.getConnectionInfo()
-	fmt.Println(c)
+	a := repository.maria()
 
 	e := echo.New()
 
@@ -61,7 +54,7 @@ func main() {
 
 	e.POST("/user", getUser)
 	e.POST("/wh", postWorkHistory)
-
+	e.GET("/", getTest)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	e.Logger.Fatal(e.Start(":7101")) // localhost:1323
@@ -84,26 +77,16 @@ func main() {
 
 }
 
-type ConnectionInfo struct {
-	Host     string `yaml:"host"`
-	Port     string `yaml:"port"`
-	Id       string `yaml:"id"`
-	Pass     string `yaml:"pass"`
-	Database string `yaml:"database"`
-}
+func getTest(c echo.Context) (err error) {
 
-func (c *ConnectionInfo) getConnectionInfo() *ConnectionInfo {
-
-	yamlFile, err := ioutil.ReadFile("config.yaml")
-	if err != nil {
-		log.Printf("yamlFile.Get err   #%v ", err)
+	u := new(models.User)
+	if err = c.Bind(u); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	err = yaml.Unmarshal(yamlFile, c)
-	if err != nil {
-		log.Fatalf("Unmarshal: %v", err)
+	if err = c.Validate(u); err != nil {
+		return err
 	}
-
-	return c
+	return c.JSON(http.StatusOK, u)
 }
 
 // @Summary Create user
