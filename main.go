@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/On-A-Rocket/Authorization-TA/docs"
 	"github.com/On-A-Rocket/Authorization-TA/models"
+	"github.com/On-A-Rocket/Authorization-TA/repository"
 
 	"github.com/go-playground/validator"
 	_ "github.com/go-sql-driver/mysql"
@@ -43,8 +44,8 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 // @BasePath
 func main() {
 
-	a := repository.maria()
-
+	repository.Maria()
+	return
 	e := echo.New()
 
 	e.Use(middleware.Logger())

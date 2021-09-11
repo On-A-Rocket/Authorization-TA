@@ -30,12 +30,11 @@ func (c *ConnectionInfo) getConnectionInfo() *ConnectionInfo {
 	return c
 }
 
-func (aaa string) maria() {
+func Maria() {
 
 	var c ConnectionInfo
 	c.getConnectionInfo()
 	fmt.Println(c)
-	fmt.Print(aaa)
 	// conn, err := sql.Open("mysql", "root:dkssud123@tcp(127.0.0.1:3306)/test")
 	// if err != nil {
 	// 	fmt.Println(err)
