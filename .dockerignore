@@ -5,3 +5,4 @@ dockerfile
 .gitignore
 config.yaml
 .vscode
+*.pem
