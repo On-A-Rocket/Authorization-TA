@@ -9,7 +9,7 @@ require (
 	github.com/swaggo/echo-swagger v1.1.2
 	github.com/swaggo/swag v1.7.1
 	gopkg.in/yaml.v2 v2.4.0
-	
+
 )
 
 require (
