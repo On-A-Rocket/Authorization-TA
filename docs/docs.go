@@ -44,12 +44,12 @@ var doc = `{
                 "summary": "Create user",
                 "parameters": [
                     {
-                        "description": "User Info Body",
+                        "description": "models.User Info Body",
                         "name": "userBody",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/main.User"
+                            "$ref": "#/definitions/models.User"
                         }
                     }
                 ],
@@ -57,7 +57,38 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/main.User"
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            }
+        },
+        "/wh": {
+            "post": {
+                "description": "Insert workhistory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Insert workhistory",
+                "parameters": [
+                    {
+                        "description": "WorkHistory Info Body",
+                        "name": "WorkhistoryBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.WorkHistory"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.WorkHistory"
                         }
                     }
                 }
@@ -65,7 +96,7 @@ var doc = `{
         }
     },
     "definitions": {
-        "main.User": {
+        "models.User": {
             "type": "object",
             "required": [
                 "email",
@@ -76,6 +107,57 @@ var doc = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.WorkHistory": {
+            "type": "object",
+            "required": [
+                "deparment_code",
+                "deparment_name",
+                "end_time",
+                "id",
+                "message",
+                "name",
+                "start_time",
+                "update_time",
+                "work_time",
+                "work_type_code",
+                "work_type_name"
+            ],
+            "properties": {
+                "deparment_code": {
+                    "type": "string"
+                },
+                "deparment_name": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "update_time": {
+                    "type": "string"
+                },
+                "work_time": {
+                    "type": "string"
+                },
+                "work_type_code": {
+                    "type": "string"
+                },
+                "work_type_name": {
                     "type": "string"
                 }
             }
@@ -95,7 +177,7 @@ type swaggerInfo struct {
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
-	Host:        "localhost:1323",
+	Host:        "localhost:7101",
 	BasePath:    "",
 	Schemes:     []string{},
 	Title:       "Authoriztion-TA Service API",

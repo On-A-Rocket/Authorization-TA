@@ -1,4 +1,4 @@
-package model
+package models
 
 // type ConnectionInfo struct {
 // 	Host     string `yaml:"host"`
