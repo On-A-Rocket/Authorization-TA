@@ -11,5 +11,5 @@ COPY --from=stage /go/src/github.com/On-A-Rocket/Authorization-TA/main /main
 COPY --from=stage /usr/local/go/lib/time/zoneinfo.zip /usr/local/go/lib/time/zoneinfo.zip
 ENV TZ=Asia/Seoul \
     ZONEINFO=/zoneinfo.zip
-EXPOSE 1323
+EXPOSE 9001
 CMD [ "/main" ]

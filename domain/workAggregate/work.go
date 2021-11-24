@@ -1,4 +1,4 @@
-package models
+package workAggregate
 
 type (
 	WorkHistory struct {

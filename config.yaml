@@ -1,7 +1,7 @@
-database:
+mariaDB:
   host:127.0.0.1
-  port:1323
+  port:3306
   id:root
-  pass:dkssud123
+  pass:1
   database:test
 
